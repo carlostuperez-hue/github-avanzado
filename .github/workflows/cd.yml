@@ -1,0 +1,31 @@
+name: CD
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Simular versionado
+        run: echo "Version actualizada"
+
+  validate-prod:
+    needs: bump-version
+    runs-on: self-hosted
+
+    steps:
+      - name: Validar PROD_TOKEN
+        shell: powershell
+        env:
+          PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
+        run: |
+          if ($env:PROD_TOKEN -eq $env:LOCAL_PROD_TOKEN) {
+            Write-Host "PROD TOKEN CORRECTO"
+          }
+          else {
+            Write-Error "PROD TOKEN INCORRECTO"
+          }
